@@ -949,7 +949,6 @@ impl<T, A: Allocator> VecDeque<T, A> {
     /// `Vec::from_raw_parts_in`, but takes a *range* of elements that are
     /// initialized rather than only supporting `0..len`.  Requires that
     /// `initialized.start` ≤ `initialized.end` ≤ `capacity`.
-    /// Also, `initialized.start` < `capacity`, unless both are 0.
     #[inline]
     #[cfg(not(test))]
     pub(crate) unsafe fn from_contiguous_raw_parts_in(
@@ -960,13 +959,9 @@ impl<T, A: Allocator> VecDeque<T, A> {
     ) -> Self {
         debug_assert!(initialized.start <= initialized.end);
         debug_assert!(initialized.end <= capacity);
-        debug_assert!(initialized.start == 0 && capacity == 0 || initialized.start < capacity);
 
         // SAFETY: Our safety precondition guarantees the range length won't wrap,
-        // that the allocation is valid for use in `RawVec` with `alloc`,
-        // and that the range contains valid elements.
-        // We have `head`, `len` ≤ `cap`, since `start`, `end` ≤ `cap`.
-        // Also, `head` < `cap` unless `head` = `cap` = `0`.
+        // and that the allocation is valid for use in `RawVec`.
         unsafe {
             VecDeque {
                 head: WrappedIndex::from_arbitrary_number(initialized.start),
