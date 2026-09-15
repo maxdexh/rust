@@ -424,12 +424,10 @@ def StdStringSummaryProvider(valobj: SBValue, dict: LLDBOpaque):
         .GetNonSyntheticValue()
     )
 
-    pointer = (
+    pointer = unwrap_unique_or_non_null(
         inner_vec.GetChildMemberWithName("buf")
         .GetChildMemberWithName("inner")
         .GetChildMemberWithName("ptr")
-        .GetChildMemberWithName("pointer")
-        .GetChildMemberWithName("pointer")
     )
 
     length = inner_vec.GetChildMemberWithName("len").GetValueAsUnsigned()
